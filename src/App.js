@@ -6,7 +6,7 @@ function App() {
   const [info, setInfo] = useState([]);
   const [selectedCountryInfo,setSelectedCountryInfo] = useState([]);
   useEffect(() => {
-    axios.get("http://api.covid19api.com/summary")
+    axios.get("https://api.covid19api.com/summary")
       .then((response) => {
         setInfo(response.data);
         console.log(response.data);
@@ -25,7 +25,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1 style={{textAlign:'center'}}>Devil May Cry Covid19 Information</h1>
+      <h1 style={{textAlign:'center'}}>Shadman Martin Piyal Covid19 Information</h1>
       {info.length === 0 ? (
         <img src={Spinner} alt="Loading Spinner" />
       ) : (
