@@ -5,6 +5,8 @@ import axios from "axios";
 function App() {
   const [info, setInfo] = useState([]);
   const [selectedCountryInfo,setSelectedCountryInfo] = useState([]);
+  const [selectedCountryInfoIndividual,setSelectedCountryInfoIndividual] = useState([]);
+  // const [countryInfoMonthly,setCountryInfoMonthly] = useState([]);
   useEffect(() => {
     axios.get("https://api.covid19api.com/summary")
       .then((response) => {
@@ -21,7 +23,30 @@ function App() {
     const countryName = e.target.countryName.value;
     const countryNameInfo = info.Countries.filter(eachCountry => eachCountry.Country === countryName);
     setSelectedCountryInfo([...countryNameInfo]);
+    axios.get(`https://api.covid19api.com/total/dayone/country/${countryName}`)
+        .then(response => {
+          setSelectedCountryInfoIndividual(response.data.map(each =>{
+            const month = ((new Date(each.Date)).getMonth()) + 1;
+            const day = (new Date(each.Date).getDate());
+            return{...each,day,month}
+          }));
+        })
+        .catch(err => console.log(err));
   }
+
+
+    console.log(selectedCountryInfoIndividual);
+    const monthlyData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[]};
+    selectedCountryInfoIndividual.map(eachInfo => monthlyData[eachInfo.month].push({
+      day:eachInfo.day,
+      Active:eachInfo.Active,
+      Confirmed:eachInfo.Confirmed,
+      Deaths:eachInfo.Deaths,
+      Recovered:eachInfo.Recovered
+    }));
+    console.log('monthly data');
+    console.log(monthlyData);
+    // use monthly data as a constant
 
   return (
     <div className="App">
@@ -76,7 +101,7 @@ function App() {
           
           <div className="countryInformationContainer">
             {selectedCountryInfo.length === 0 ? (<p>No Country is Selected yet</p>) : (<div className="countryInformation">
-              
+              <h4>{monthlyData[1].length === 0 ? (<p>No montly data</p>) : (<p>Yes monthly data</p>)}</h4>
               <h4>Country:<span style={{color:'blue'}}>{selectedCountryInfo[0].Country}</span></h4>
               <h4>New Confirmed Today:<span style={{color:'green'}}>{selectedCountryInfo[0].NewConfirmed}</span></h4>
               <h4>New Deaths Today:<span style={{color:'red'}}>{selectedCountryInfo[0].NewDeaths}</span></h4>
