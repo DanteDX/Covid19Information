@@ -10,6 +10,7 @@ function App() {
   const [countryInfoMonthly,setCountryInfoMonthly] = useState([]);
   const [statusType,setStatusType] = useState("");
   const [showChart,setShowChart] = useState(false);
+  const [countryNameState,setCountryNameState] = useState("");
   useEffect(() => {
     axios.get("https://api.covid19api.com/summary")
       .then((response) => {
@@ -21,9 +22,13 @@ function App() {
 
   const globalData = info.Global;
   const todayDate = new Date().toUTCString();
+
   const submitHandler = e =>{
     e.preventDefault();
+    if(showChart === true) setShowChart(false);
+    setCountryInfoMonthly([]);
     const countryName = e.target.countryName.value;
+    setCountryNameState(countryName);
     const countryNameInfo = info.Countries.filter(eachCountry => eachCountry.Country === countryName);
     setSelectedCountryInfo([...countryNameInfo]);
     axios.get(`https://api.covid19api.com/total/dayone/country/${countryName}`)
@@ -67,13 +72,16 @@ function App() {
     // use monthly data as a constant
     const statusSelectionHandler = (e) =>{
         e.preventDefault();
-        setShowChart(!showChart);
+        setStatusType(e.target.status.value)
+        if(showChart !== true){
+          setShowChart(!showChart);
+        }
+        
     }
 
   return (
     <div className="App">
       
-      <button onClick={e => console.log(countryInfoMonthly)}>Console log month data</button>
       <h1 style={{textAlign:'center'}}>Shadman Martin Piyal Covid19 Information</h1>
       {info.length === 0 ? (
         <img src={Spinner} alt="Loading Spinner" />
@@ -134,24 +142,25 @@ function App() {
               <h4>Total Confirmed:<span style={{color:'red'}}>{selectedCountryInfo[0].TotalConfirmed}</span></h4>
               <h4>Total Deaths:<span style={{color:'red'}}>{selectedCountryInfo[0].TotalDeaths}</span></h4>
               <h4>Total Recovered:<span style={{color:'green'}}>{selectedCountryInfo[0].TotalRecovered}</span></h4>
-              <button onClick={e => creatingMonthlyData()}>See Monthly data</button>
+              <button className="monthlyDataGeneratorButton" onClick={e => creatingMonthlyData()}>See Monthly data</button>
             </div>)}
           </div>
-          {countryInfoMonthly.length === 0 ? (<p>No monthly data yet</p>) : (<div>
-            <p>Monthly Data generated</p>
+          {countryInfoMonthly.length === 0 ? (<p></p>) : (<div>
+            <p></p>
             <form className="statusSelectionForm" onSubmit={e => statusSelectionHandler(e)}>
-              <select id="status" name="status" onChange={e => setStatusType(e.target.value)}>
+              <select className="statusSelector" id="status" name="status">
                 <option value="">Select a type</option>
                 <option value="Active">Active Cases</option>
                 <option value="Confirmed">Confirmed Cases</option>
                 <option value="Deaths">Deaths Count</option>
                 <option value="Recovered">Recovered Cases</option>
               </select>
-              <button type="subimt">Select</button>
+              <button className="statusSelectorButton" type="subimt">Select</button>
             </form>
-            <button onClick={e => console.log(statusType)}>Console log status type</button>
             {showChart && (
-              <DataChart statusType={statusType} countryInfoMonthly={countryInfoMonthly} />
+              <DataChart statusType={statusType} countryInfoMonthly={countryInfoMonthly} 
+                countryName={countryNameState}
+              />
             )}
             
           </div>)}
