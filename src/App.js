@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Spinner from "./img/spinner.gif";
 import axios from "axios";
+import DataChart from './DataChart';
 
 function App() {
   const [info, setInfo] = useState([]);
   const [selectedCountryInfo,setSelectedCountryInfo] = useState([]);
   const [selectedCountryInfoIndividual,setSelectedCountryInfoIndividual] = useState([]);
   const [countryInfoMonthly,setCountryInfoMonthly] = useState([]);
+  const [statusType,setStatusType] = useState("");
+  const [showChart,setShowChart] = useState(false);
   useEffect(() => {
     axios.get("https://api.covid19api.com/summary")
       .then((response) => {
@@ -62,6 +65,10 @@ function App() {
     // console.log('monthly data');
     // console.log(monthlyData);
     // use monthly data as a constant
+    const statusSelectionHandler = (e) =>{
+        e.preventDefault();
+        setShowChart(!showChart);
+    }
 
   return (
     <div className="App">
@@ -132,8 +139,8 @@ function App() {
           </div>
           {countryInfoMonthly.length === 0 ? (<p>No monthly data yet</p>) : (<div>
             <p>Monthly Data generated</p>
-            <form className="statusSelectionForm">
-              <select>
+            <form className="statusSelectionForm" onSubmit={e => statusSelectionHandler(e)}>
+              <select id="status" name="status" onChange={e => setStatusType(e.target.value)}>
                 <option value="">Select a type</option>
                 <option value="Active">Active Cases</option>
                 <option value="Confirmed">Confirmed Cases</option>
@@ -142,6 +149,10 @@ function App() {
               </select>
               <button type="subimt">Select</button>
             </form>
+            <button onClick={e => console.log(statusType)}>Console log status type</button>
+            {showChart && (
+              <DataChart statusType={statusType} countryInfoMonthly={countryInfoMonthly} />
+            )}
             
           </div>)}
         </div>
