@@ -65,7 +65,7 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={e => creatingMonthlyData()}>Create Monthly Data</button>
+      
       <button onClick={e => console.log(countryInfoMonthly)}>Console log month data</button>
       <h1 style={{textAlign:'center'}}>Shadman Martin Piyal Covid19 Information</h1>
       {info.length === 0 ? (
@@ -104,6 +104,7 @@ function App() {
                 <label htmlFor="countryName">Select a Country Name for further information:</label>
                 <br/>
                 <select className="countrySelector" id="countryName" name="countryName">
+                  <option>Select a country</option>
                   {info.Countries.map(eachCountry =>{
                     return(
                       <option key={Math.random()} value={eachCountry.Country}>
@@ -126,10 +127,26 @@ function App() {
               <h4>Total Confirmed:<span style={{color:'red'}}>{selectedCountryInfo[0].TotalConfirmed}</span></h4>
               <h4>Total Deaths:<span style={{color:'red'}}>{selectedCountryInfo[0].TotalDeaths}</span></h4>
               <h4>Total Recovered:<span style={{color:'green'}}>{selectedCountryInfo[0].TotalRecovered}</span></h4>
+              <button onClick={e => creatingMonthlyData()}>See Monthly data</button>
             </div>)}
           </div>
+          {countryInfoMonthly.length === 0 ? (<p>No monthly data yet</p>) : (<div>
+            <p>Monthly Data generated</p>
+            <form className="statusSelectionForm">
+              <select>
+                <option value="">Select a type</option>
+                <option value="Active">Active Cases</option>
+                <option value="Confirmed">Confirmed Cases</option>
+                <option value="Deaths">Deaths Count</option>
+                <option value="Recovered">Recovered Cases</option>
+              </select>
+              <button type="subimt">Select</button>
+            </form>
+            
+          </div>)}
         </div>
-          </div>
+        </div>
+        
           
       )}
     </div>
