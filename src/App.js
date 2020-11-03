@@ -6,7 +6,7 @@ function App() {
   const [info, setInfo] = useState([]);
   const [selectedCountryInfo,setSelectedCountryInfo] = useState([]);
   const [selectedCountryInfoIndividual,setSelectedCountryInfoIndividual] = useState([]);
-  // const [countryInfoMonthly,setCountryInfoMonthly] = useState([]);
+  const [countryInfoMonthly,setCountryInfoMonthly] = useState([]);
   useEffect(() => {
     axios.get("https://api.covid19api.com/summary")
       .then((response) => {
@@ -34,22 +34,39 @@ function App() {
         .catch(err => console.log(err));
   }
 
-
-    console.log(selectedCountryInfoIndividual);
-    const monthlyData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[]};
-    selectedCountryInfoIndividual.map(eachInfo => monthlyData[eachInfo.month].push({
-      day:eachInfo.day,
-      Active:eachInfo.Active,
-      Confirmed:eachInfo.Confirmed,
-      Deaths:eachInfo.Deaths,
-      Recovered:eachInfo.Recovered
-    }));
-    console.log('monthly data');
-    console.log(monthlyData);
+  
+    const monthlyDataSetter = () =>{
+      return new Promise((resolve,reject)=>{
+        const monthlyData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[]};
+        selectedCountryInfoIndividual.map(eachInfo => monthlyData[eachInfo.month].push({
+        day:eachInfo.day,
+        Active:eachInfo.Active,
+        Confirmed:eachInfo.Confirmed,
+        Deaths:eachInfo.Deaths,
+        Recovered:eachInfo.Recovered
+        }));
+        resolve(monthlyData);
+        reject('Error with promise');
+      })
+    };
+    const creatingMonthlyData = () =>{
+      monthlyDataSetter()
+        .then(data =>{
+          console.log(data);
+          setCountryInfoMonthly(data);
+        })
+        .catch(err => console.log(err))
+    };
+    // console.log(selectedCountryInfoIndividual);
+    
+    // console.log('monthly data');
+    // console.log(monthlyData);
     // use monthly data as a constant
 
   return (
     <div className="App">
+      <button onClick={e => creatingMonthlyData()}>Create Monthly Data</button>
+      <button onClick={e => console.log(countryInfoMonthly)}>Console log month data</button>
       <h1 style={{textAlign:'center'}}>Shadman Martin Piyal Covid19 Information</h1>
       {info.length === 0 ? (
         <img src={Spinner} alt="Loading Spinner" />
@@ -101,7 +118,7 @@ function App() {
           
           <div className="countryInformationContainer">
             {selectedCountryInfo.length === 0 ? (<p>No Country is Selected yet</p>) : (<div className="countryInformation">
-              <h4>{monthlyData[1].length === 0 ? (<p>No montly data</p>) : (<p>Yes monthly data</p>)}</h4>
+              {/* <h4>{monthlyData[1].length === 0 ? (<p>No montly data</p>) : (<p>Yes monthly data</p>)}</h4> */}
               <h4>Country:<span style={{color:'blue'}}>{selectedCountryInfo[0].Country}</span></h4>
               <h4>New Confirmed Today:<span style={{color:'green'}}>{selectedCountryInfo[0].NewConfirmed}</span></h4>
               <h4>New Deaths Today:<span style={{color:'red'}}>{selectedCountryInfo[0].NewDeaths}</span></h4>
